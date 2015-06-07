@@ -1,0 +1,23 @@
+tempD<-read.table("household_power_consumption.txt",sep=";", header=TRUE)[,1]
+tempD<-as.Date(tempD, format="%d/%m/%Y")
+temp1<-read.table("household_power_consumption.txt",sep=";", header=TRUE)[which(tempD=="2007-02-01"),]
+temp2<-read.table("household_power_consumption.txt",sep=";", header=TRUE)[which(tempD=="2007-02-02"),]
+elec<-rbind(temp1,temp2)
+elec$Global_active_power<-as.numeric(as.character(elec$Global_active_power))
+elec$Sub_metering_1<-as.numeric(as.character(elec$Sub_metering_1))
+elec$Sub_metering_2<-as.numeric(as.character(elec$Sub_metering_2))
+elec$Sub_metering_3<-as.numeric(as.character(elec$Sub_metering_3))
+elec$Voltage<-as.numeric(as.character(elec$Voltage))
+elec$Global_reactive_power<-as.numeric(as.character(elec$Global_reactive_power))
+x_lab<-as.POSIXct(paste(as.Date(elec$Date,format="%d/%m/%Y"),elec$Time,sep=" "))
+png("plot4.png",height=480, width=480, units="px")
+par(mfrow=c(2,2))
+plot(x_lab,elec$Global_active_power,type="l",ylab="Global Active Power",xlab="")
+plot(x_lab,elec$Voltage,xlab="datetime",ylab="Voltage",type="l")
+with(elec,plot(x_lab,elec$Sub_metering_1,type="n",ylab="Energy Sub metering",xlab=""))
+with(elec,lines(x_lab,elec$Sub_metering_1,type="l",ylab="Energy Sub metering",col="black", xlab=""))
+with(elec,lines(x_lab,elec$Sub_metering_2,type="l",ylab="Energy Sub metering",col="red", xlab=""))
+with(elec,lines(x_lab,elec$Sub_metering_3,type="l",ylab="Energy Sub metering",col="blue",xlab=""))
+legend("topright",lty=1,legend=c("Sub_metering_1","Sub_metering_2","Sub_metering_3"),col=c("Black","Red","Blue"),bty="n")
+plot(x_lab,elec$Global_reactive_power,type="l", xlab="datetime", ylab="Global_reactive_power")
+dev.off()
